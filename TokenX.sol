@@ -352,7 +352,7 @@ contract TokenX is Context, IBEP20, Ownable {
     _name = "Token X";
     _symbol = "TKX";
     _decimals = 8;
-    _totalSupply = 51010000000000000000;
+    _totalSupply = 1000000000000000000; 
     _balances[msg.sender] = _totalSupply;
 
     emit Transfer(address(0), msg.sender, _totalSupply);
