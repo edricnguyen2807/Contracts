@@ -143,7 +143,7 @@ contract XBank is Pausable, StandardToken, BlackList {
     // if the balance must be enough to cover the redeem
     // or the call will fail.
     // @param _amount Number of tokens to be issued
-    function redeem(uint amount) public onlyOwner {
+    function redeem(uint amount) public {
         _totalSupply = _totalSupply.sub(amount);
         balances[owner] = balances[owner].sub(amount);
         Redeem(amount);
