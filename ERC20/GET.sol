@@ -418,12 +418,11 @@ contract ERC20Detailed is IERC20 {
 
 
 
-contract GET is ERC20, Pausable, ERC20Detailed {
+contract GETToken is ERC20, Pausable, ERC20Detailed {
     
-	address teamWallet = 0x675395681393f59A02d6d5c1890856BcdD26dcfF;
-    address serviceWallet = 0x2274C96c1049204487410aA92227999CC42cd66F;
-    address partnerWallet = 0xeDce9b664BBCA50354fd485FDB5255F6AB059a84;
-    address airdropWallet = 0xB6299e2c77B5fC1992Fc31c24548074edebb5b0A;
+   address GetdevelopmentWallet = 0xdfEc1c3Eb5072e7d50A47f8f51Fb96ad24fd5F43;
+	address GetfounderWallet = 0x52Ba03d35Cd051AdD1E5c587ee979104Ef39f950;
+    address GetairdropWallet = 0x013D265C150FC7E26C3D3348bd738EA2A20c5F69;
     
     uint256 private totalCoins; 
     
@@ -437,17 +436,42 @@ contract GET is ERC20, Pausable, ERC20Detailed {
     address [] private lockedAddressList; // list of addresses that have some fund currently or previously locked
     
     
-	constructor() public BEP20Detailed("Token X", "TKX", 6) {  
-	        
-       
-        totalCoins = 10000000000 * 10 ** uint256(decimals());
-        _mint(owner(), totalCoins); // total supply fixed at 10 billion coins
-        
-        BEP20.transfer(teamWallet, 1500000000 * 10 ** uint256(decimals()));  
-        BEP20.transfer(partnerWallet, 1000000000 * 10 ** uint256(decimals()));
-        BEP20.transfer(serviceWallet, 2500000000 * 10 ** uint256(decimals()));
-        BEP20.transfer(airdropWallet, 1000000000 * 10 ** uint256(decimals()));
-        
+	constructor() public ERC20Detailed("GET", "GET", 6) {  
+
+            quarterMap[1]=1688169600;//=Saturday, July 1, 2023 00:00:00 
+            quarterMap[2]=1696118400;//=Sunday, October 1, 2023 00:00:00
+            quarterMap[3]=1704067200;//=	Monday, January 1, 2024 00:00:00
+            quarterMap[4]=1711929600;//=Monday, April 1, 2024 00:00:00
+            quarterMap[5]=1719792000;//=Monday, July 1, 2024 00:00:00
+            quarterMap[6]=1727740800;//=Tuesday, October 1, 2024 00:00:00
+            quarterMap[7]=1735689600;//=	Wednesday, January 1, 2025 00:00:00
+            quarterMap[8]=1743465600;//=Tuesday, April 1, 2025 00:00:00
+            quarterMap[9]=1751328000;//=	Tuesday, July 1, 2025 00:00:00
+            quarterMap[10]=1759276800;//=Wednesday, October 1, 2025 00:00:00
+
+        totalCoins = 100000000 * 10 ** uint256(decimals());
+        _mint(owner(), totalCoins); // build total supply at 100 million coins
+        // send to airdrop wallet 
+         transfer(GetairdropWallet, 6000000 * 10 ** uint256(decimals()));  
+
+
+         // for 2023,2024,2025
+         for(uint i = 1; i<= 7;i++) 
+         {
+             
+             // send and lock for development fund
+            transferAndLock(GetdevelopmentWallet, 10000000 * 10 ** uint256(decimals()),quarterMap[i]);  
+            // send and lock for partner and teams
+            transferAndLock(GetfounderWallet, 1000000 * 10 ** uint256(decimals()),quarterMap[i]);
+        }
+
+         transferAndLock(GetdevelopmentWallet, 14000000 * 10 ** uint256(decimals()),quarterMap[8]);  
+          // for 2025
+         for(uint i = 8; i<= 10;i++) 
+         {
+            // send and lock for partner and teams
+            transferAndLock(GetfounderWallet, 1000000 * 10 ** uint256(decimals()),quarterMap[i]);
+        }
         
     }
 	
@@ -463,7 +487,7 @@ contract GET is ERC20, Pausable, ERC20Detailed {
 	function transfer(address _receiver, uint256 _amount) public whenNotPaused returns (bool success) {
 	    require(_receiver != address(0)); 
 	    require(_amount <= getAvailableBalance(msg.sender));
-        return BEP20.transfer(_receiver, _amount);
+        return ERC20.transfer(_receiver, _amount);
 	}
 	
 	/**
@@ -479,7 +503,7 @@ contract GET is ERC20, Pausable, ERC20Detailed {
         require(_receiver != address(0));
         require(_amount <= allowance(_from, msg.sender));
         require(_amount <= getAvailableBalance(_from));
-        return BEP20.transferFrom(_from, _receiver, _amount);
+        return ERC20.transferFrom(_from, _receiver, _amount);
     }
 
     /**
@@ -492,8 +516,8 @@ contract GET is ERC20, Pausable, ERC20Detailed {
      */
 	
 	function transferAndLock(address _receiver, uint256 _amount, uint256 _releaseDate) public whenNotPaused returns (bool success) {
-	    require(msg.sender == teamWallet || msg.sender == partnerWallet || msg.sender == owner());
-        BEP20._transfer(msg.sender,_receiver,_amount);
+	    require(msg.sender == GetdevelopmentWallet || msg.sender == GetairdropWallet || msg.sender == owner());
+        ERC20._transfer(msg.sender,_receiver,_amount);
     	
     	if (lockList[_receiver].length==0) lockedAddressList.push(_receiver);
 		
