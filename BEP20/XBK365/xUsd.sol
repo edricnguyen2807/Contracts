@@ -309,7 +309,7 @@ contract UpgradedStandardToken is StandardToken{
     function approveByLegacy(address from, address spender, uint value) public;
 }
 
-contract xVND is Pausable, StandardToken {
+contract xUSD is Pausable, StandardToken, BlackList {
 
     string public name;
     string public symbol;
@@ -335,6 +335,7 @@ contract xVND is Pausable, StandardToken {
 
     // Forward ERC20 methods to upgraded contract if this one is deprecated
     function transfer(address _to, uint _value) public whenNotPaused {
+        require(!isBlackListed[msg.sender]);
         if (deprecated) {
             return UpgradedStandardToken(upgradedAddress).transferByLegacy(msg.sender, _to, _value);
         } else {
@@ -344,6 +345,7 @@ contract xVND is Pausable, StandardToken {
 
     // Forward ERC20 methods to upgraded contract if this one is deprecated
     function transferFrom(address _from, address _to, uint _value) public whenNotPaused {
+        require(!isBlackListed[_from]);
         if (deprecated) {
             return UpgradedStandardToken(upgradedAddress).transferFromByLegacy(msg.sender, _from, _to, _value);
         } else {

@@ -309,7 +309,7 @@ contract UpgradedStandardToken is StandardToken{
     function approveByLegacy(address from, address spender, uint value) public;
 }
 
-contract xVND is Pausable, StandardToken {
+contract xAED is Pausable, StandardToken {
 
     string public name;
     string public symbol;
